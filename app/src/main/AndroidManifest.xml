@@ -8,7 +8,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppacheTestWork">
+        android:theme="@style/Theme.AppacheTestWork"
+        android:name=".di.DrawingApp">
         <activity
             android:name=".MainActivity"
             android:exported="true">
