@@ -10,8 +10,7 @@ import com.example.appachetestwork.PROJECT_TABLE_NAME
     indices = [Index(value = ["name"], unique = true)]
 )
 data class Project(
-    val name: String,
-    val path: String
+    val name: String
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0

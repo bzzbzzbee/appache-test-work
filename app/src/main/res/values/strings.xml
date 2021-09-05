@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">AppacheTestWork</string>
+    <string name="undo">Undo</string>
+    <string name="repeat">Repeat</string>
+    <string name="save">Save</string>
+    <string name="color_pick">Color Pick</string>
+    <string name="brush_size">Brush Size</string>
+    <string name="cant_open_project">Can\'t load project</string>
 </resources>
