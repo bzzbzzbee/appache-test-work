@@ -75,7 +75,7 @@ class DrawingScreenFragment : Fragment() {
         })
 
         binding.btnBrush.setOnClickListener {
-            //TODO on hold changing value
+            //TODO on hold & swipe changing value
         }
 
         binding.btnColor.setOnClickListener {
@@ -84,6 +84,7 @@ class DrawingScreenFragment : Fragment() {
                 override fun setOnFastChooseColorListener(position: Int, color: Int) {
                     drawView.setColor(color)
                 }
+
                 override fun onCancel() {
                     colorPicker.dismissDialog()
                 }
@@ -105,11 +106,11 @@ class DrawingScreenFragment : Fragment() {
         }
 
         binding.btnUndo.setOnClickListener {
-            drawView
+            drawView.undo()
         }
 
         binding.btnRepeat.setOnClickListener {
-            drawView
+            drawView.repeat()
         }
 
         return binding.root
