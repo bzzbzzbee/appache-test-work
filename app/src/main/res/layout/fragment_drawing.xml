@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawing_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B6B6B6"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/actions_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageButton
+            android:id="@+id/btn_undo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_undo"
+            android:text="@string/undo" />
+
+        <ImageButton
+            android:id="@+id/btn_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_repeat"
+            android:text="@string/repeat" />
+
+        <ImageButton
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_save"
+            android:text="@string/save" />
+
+        <ImageButton
+            android:id="@+id/btn_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_colorpicker"
+            android:text="@string/color_pick" />
+
+        <ImageButton
+            android:id="@+id/btn_brush"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_brush"
+            android:text="@string/brush_size" />
+
+        <ImageButton
+            android:id="@+id/btn_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_clear"
+            android:text="@string/save" />
+
+    </LinearLayout>
+
+    <com.example.appachetestwork.paint.DrawView
+        android:id="@+id/draw_view"
+        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical" />
+
+</LinearLayout>

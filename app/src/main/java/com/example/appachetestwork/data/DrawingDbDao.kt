@@ -16,5 +16,8 @@ interface DrawingDbDao {
     fun getAllProjects(): Flow<List<Project>>
 
     @Query("SELECT * FROM projects WHERE id IN(:id)")
-    fun getProjectById(id: Long): Flow<Project>
+    fun getProjectById(id: Long): Project?
+
+    @Query("SELECT COUNT(id) FROM projects")
+    suspend fun countProjects(): Long
 }
