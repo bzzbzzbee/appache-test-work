@@ -5,13 +5,12 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.example.appachetestwork.DrawViewHelper
 import kotlin.math.abs
 
 class DrawView(context: Context?, attrs: AttributeSet? = null) : View(context, attrs) {
     private var mX = 0f
     private var mY = 0f
-    private var currentColor = 0
-    private var strokeWidth = 0
 
     private val mPaint: Paint = Paint().apply {
         isAntiAlias = true
@@ -20,81 +19,63 @@ class DrawView(context: Context?, attrs: AttributeSet? = null) : View(context, a
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
-
-        // 0xff=255 in decimal
         alpha = 0xff
     }
 
-    private val mPath: Path by lazy { Path() }
+    private var mPath = Path()
     private lateinit var mBitmap: Bitmap
     private lateinit var mCanvas: Canvas
+    private lateinit var helper: DrawViewHelper
 
-    private val paths: MutableList<Stroke> = mutableListOf()
-    private val stashPaths: MutableList<Stroke> = mutableListOf()
-
-    private val mBitmapPaint by lazy { Paint(Paint.DITHER_FLAG) }
+    private val mBitmapPaint = Paint(Paint.DITHER_FLAG)
 
     fun setWidth(width: Int) {
-        strokeWidth = width
+        helper.setWidth(width)
     }
 
     fun setColor(color: Int) {
-        currentColor = color
+        helper.setColor(color)
     }
 
-    fun init(height: Int, width: Int) {
+    fun init(height: Int, width: Int, helper: DrawViewHelper) {
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap)
-
-        // set an initial color of the brush
-        currentColor = Color.BLACK
-
-        // set an initial brush size
-        strokeWidth = 30
+        this.helper = helper
     }
 
-    fun init(height: Int, width: Int, bitmap: Bitmap) {
+    fun init(bitmap: Bitmap, helper: DrawViewHelper) {
         mCanvas = Canvas(bitmap)
-
-        // set an initial color of the brush
-        currentColor = Color.BLACK
-
-        // set an initial brush size
-        strokeWidth = 30
+        this.helper = helper
     }
 
     fun undo() {
-        if (paths.isNotEmpty()) {
-            val next = paths.removeLast()
-            stashPaths.add(next)
+        if (helper.paths.isNotEmpty()) {
+            val next = helper.removeLastFromPath()
+            helper.addToStash(next)
             invalidate()
         }
     }
 
     fun repeat() {
-        if (stashPaths.isNotEmpty()) {
-            paths.add(stashPaths.removeLast())
+        if (helper.stashPaths.isNotEmpty()) {
+            val last = helper.removeLastFromStash()
+            helper.addToPath(last)
             invalidate()
         }
     }
 
-    // this methods returns the current bitmap
     fun save(): Bitmap = mBitmap
 
-    // this is the main method where
-    // the actual drawing takes place
     override fun onDraw(canvas: Canvas) {
         // save the current state of the canvas before,
         // to draw the background of the canvas
-        //super.onDraw(canvas)
         canvas.save()
 
-        // DEFAULT color of the canvas
         mCanvas.drawColor(Color.WHITE)
 
         // now, we iterate over the list of paths
         // and draw each path on the canvas
-        paths.forEach { fp ->
+        helper.paths.forEach { fp ->
             mPaint.color = fp.color
             mPaint.strokeWidth = fp.strokeWidth.toFloat()
             mCanvas.drawPath(fp.path, mPaint)
@@ -108,8 +89,11 @@ class DrawView(context: Context?, attrs: AttributeSet? = null) : View(context, a
     // firstly, we create a new Stroke
     // and add it to the paths list
     private fun touchStart(x: Float, y: Float) {
-        val fp = Stroke(currentColor, strokeWidth, mPath)
-        paths.add(fp)
+        mPath = Path()
+
+        val fp = Stroke(helper.currentColor, helper.strokeWidth, mPath)
+        helper.addToPath(fp)
+        helper.clearStash()
 
         // finally remove any curve
         // or line from the path
@@ -171,6 +155,11 @@ class DrawView(context: Context?, attrs: AttributeSet? = null) : View(context, a
             }
         }
         return true
+    }
+
+    fun clear() {
+        helper.setColor(Color.WHITE)
+        helper.setWidth(50)
     }
 
     companion object {

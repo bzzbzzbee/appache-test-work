@@ -1,108 +1,107 @@
 package com.example.appachetestwork.fragments
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
-import com.example.appachetestwork.databinding.DrawingScreenBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.appachetestwork.MainActivity
 import com.example.appachetestwork.R
+import com.example.appachetestwork.databinding.FragmentDrawingBinding
+import com.example.appachetestwork.paint.DrawView
 import com.example.appachetestwork.ui.DrawingScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import petrov.kristiyan.colorpicker.ColorPicker
-import java.io.File
 import java.nio.ByteBuffer
-import petrov.kristiyan.colorpicker.ColorPicker.OnFastChooseColorListener
 
 
 @AndroidEntryPoint
 class DrawingScreenFragment : Fragment() {
-    private var _binding: DrawingScreenBinding? = null
+    private var _binding: FragmentDrawingBinding? = null
     private val binding get() = _binding!!
 
-    private val args: DrawingScreenFragmentArgs by navArgs()
+    //TODO add arg nav arguments
+    private val args = "new_project"
 
     private val viewModel: DrawingScreenViewModel by viewModels()
 
     private var projectName = "Мой проект"
+    private var screenWidth = 0
 
     @RequiresApi(Build.VERSION_CODES.R)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        //TODO WindowMetrics issue on Redmi Note 4
+        val bounds = (requireActivity() as MainActivity).windowManager.currentWindowMetrics.bounds
+        screenWidth = minOf(bounds.width(), bounds.height())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DrawingScreenBinding.inflate(inflater, container, false)
+        _binding = FragmentDrawingBinding.inflate(inflater, container, false)
 
         val drawView = binding.drawView
-        val screenWidth = requireActivity().windowManager.currentWindowMetrics.bounds.width()
-        drawView.width = screenWidth
-
-        val vto: ViewTreeObserver = drawView.viewTreeObserver
-        vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+        drawView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 drawView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val width: Int = drawView.measuredWidth
-                val height: Int = drawView.measuredHeight
-                if (args.projectId == "new_project") {
-                    projectName += " 1"
-                    drawView.init(height, width)
-                } else {
-                    val project = viewModel.getProject(args.projectId)
-                    try {
-                        val file = File(requireContext().filesDir, project?.name)
-                        val bitmap = BitmapFactory.decodeFile(file.path)
-                        projectName += " ${project?.id?.plus(1)}"
-                        drawView.init(height, width, bitmap)
-                    } catch (t: Throwable) {
-                        Log.e("File open ex: ", t.message.toString())
-                        showToast(R.string.cant_open_project)
-                        projectName += " 1"
-                        drawView.init(height, width)
-                    }
-                }
+                drawView.init(screenWidth, screenWidth, viewModel.drawViewHelper)
             }
         })
 
+        initButtons(drawView)
+        return binding.root
+    }
+
+    private fun showToast(text: Int) = Toast.makeText(
+        requireContext(), text,
+        Toast.LENGTH_SHORT
+    ).show()
+
+    private fun initButtons(drawView: DrawView) {
         binding.btnBrush.setOnClickListener {
-            //TODO on hold & swipe changing value
+            drawView.width = 30
+
         }
 
+        //TODO move to https://github.com/skydoves/ColorPickerView
         binding.btnColor.setOnClickListener {
             val colorPicker = ColorPicker(requireActivity())
-            colorPicker.setOnFastChooseColorListener(object : OnFastChooseColorListener {
+            colorPicker.setOnFastChooseColorListener(object :
+                ColorPicker.OnFastChooseColorListener {
                 override fun setOnFastChooseColorListener(position: Int, color: Int) {
                     drawView.setColor(color)
                 }
 
                 override fun onCancel() {
                     colorPicker.dismissDialog()
+                    drawView.setColor(Color.BLACK)
                 }
             })
                 .setColumns(5)
-                .setDefaultColorButton(Color.parseColor("#000000"))
+                .setDefaultColorButton(R.color.black)
                 .show()
         }
 
         binding.btnSave.setOnClickListener {
-            val file = File(projectName)
+            //TODO move to separate save handler
+            /*val file = File(projectName)
             if (file.exists())
                 file.delete()
             val bitmap = drawView.save()
             val fileContents = bitmap.toByteArray()
             requireContext().openFileOutput(projectName, Context.MODE_PRIVATE).use {
-                it.write(fileContents)
-            }
+                 it.write(fileContents)
+            }*/
         }
 
         binding.btnUndo.setOnClickListener {
@@ -113,13 +112,10 @@ class DrawingScreenFragment : Fragment() {
             drawView.repeat()
         }
 
-        return binding.root
+        binding.btnClear.setOnClickListener {
+            drawView.clear()
+        }
     }
-
-    private fun showToast(text: Int) = Toast.makeText(
-        requireContext(), text,
-        Toast.LENGTH_SHORT
-    ).show()
 
     override fun onDestroyView() {
         super.onDestroyView()

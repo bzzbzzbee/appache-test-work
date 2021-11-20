@@ -28,6 +28,7 @@ class DataBaseModule {
             .build()
     }
 
+    @Singleton
     @Provides
     fun provideEmployeesDao(drawingDataBase: DrawingDataBase): DrawingDbDao {
         return drawingDataBase.drawingDbDao()
