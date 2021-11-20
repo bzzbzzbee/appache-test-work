@@ -1,7 +1,7 @@
 package com.example.appachetestwork.ui
 
 import androidx.lifecycle.ViewModel
-import com.example.appachetestwork.DrawViewHelper
+import com.example.appachetestwork.paint.DrawViewHelper
 import com.example.appachetestwork.data.DrawingAppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

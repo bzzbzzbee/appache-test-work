@@ -1,6 +1,6 @@
 package com.example.appachetestwork.di
 
-import com.example.appachetestwork.DrawViewHelper
+import com.example.appachetestwork.paint.DrawViewHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

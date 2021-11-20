@@ -7,4 +7,7 @@
     <string name="brush_size">Brush Size</string>
     <string name="cant_open_project">Can\'t load project</string>
     <string name="project_preview">Project Preview</string>
+    <string name="pick_a_color">Pick a color</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>
