@@ -1,7 +1,6 @@
-package com.example.appachetestwork
+package com.example.appachetestwork.paint
 
 import android.graphics.Color
-import com.example.appachetestwork.paint.Stroke
 
 class DrawViewHelper {
     private val _paths: MutableList<Stroke> = mutableListOf()
@@ -28,8 +27,8 @@ class DrawViewHelper {
         _currentColor = color
     }
 
-    fun addToPath(fp:Stroke) = _paths.add(fp)
-    fun addToStash(fp:Stroke) = _stashPaths.add(fp)
+    fun addToPath(fp: Stroke) = _paths.add(fp)
+    fun addToStash(fp: Stroke) = _stashPaths.add(fp)
     fun removeLastFromPath() = _paths.removeLast()
     fun removeLastFromStash() = _stashPaths.removeLast()
     fun clearStash() = _stashPaths.clear()

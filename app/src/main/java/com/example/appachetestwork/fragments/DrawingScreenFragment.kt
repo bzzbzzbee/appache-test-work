@@ -1,7 +1,6 @@
 package com.example.appachetestwork.fragments
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,8 +16,9 @@ import com.example.appachetestwork.R
 import com.example.appachetestwork.databinding.FragmentDrawingBinding
 import com.example.appachetestwork.paint.DrawView
 import com.example.appachetestwork.ui.DrawingScreenViewModel
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import dagger.hilt.android.AndroidEntryPoint
-import petrov.kristiyan.colorpicker.ColorPicker
 import java.nio.ByteBuffer
 
 
@@ -49,7 +49,6 @@ class DrawingScreenFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDrawingBinding.inflate(inflater, container, false)
-
         val drawView = binding.drawView
         drawView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -73,23 +72,8 @@ class DrawingScreenFragment : Fragment() {
 
         }
 
-        //TODO move to https://github.com/skydoves/ColorPickerView
         binding.btnColor.setOnClickListener {
-            val colorPicker = ColorPicker(requireActivity())
-            colorPicker.setOnFastChooseColorListener(object :
-                ColorPicker.OnFastChooseColorListener {
-                override fun setOnFastChooseColorListener(position: Int, color: Int) {
-                    drawView.setColor(color)
-                }
-
-                override fun onCancel() {
-                    colorPicker.dismissDialog()
-                    drawView.setColor(Color.BLACK)
-                }
-            })
-                .setColumns(5)
-                .setDefaultColorButton(R.color.black)
-                .show()
+            showColorPickDialog(drawView)
         }
 
         binding.btnSave.setOnClickListener {
@@ -115,6 +99,20 @@ class DrawingScreenFragment : Fragment() {
         binding.btnClear.setOnClickListener {
             drawView.clear()
         }
+    }
+
+    private fun showColorPickDialog(drawView: DrawView) {
+        ColorPickerDialog.Builder(requireActivity())
+            .setTitle(getString(R.string.pick_a_color))
+            .setPositiveButton(getString(R.string.ok),
+                ColorEnvelopeListener { envelope, _ ->
+                    drawView.setColor(envelope.color)
+                })
+            .setNegativeButton(getString(R.string.cancel)) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .setBottomSpace(16)
+            .show()
     }
 
     override fun onDestroyView() {

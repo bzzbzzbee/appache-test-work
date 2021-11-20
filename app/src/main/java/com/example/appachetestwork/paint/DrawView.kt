@@ -5,7 +5,6 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.example.appachetestwork.DrawViewHelper
 import kotlin.math.abs
 
 class DrawView(context: Context?, attrs: AttributeSet? = null) : View(context, attrs) {
